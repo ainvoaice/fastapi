@@ -4,7 +4,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import SQLModel
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncEngine
 from app.config import Settings
-from app.models import User, Group  # import models to register metadata
+# from app.models import User, Group  # import models to register metadata
 
 async_engine: Optional[AsyncEngine] = None
 async_session_maker: Optional[async_sessionmaker[AsyncSession]] = None
@@ -17,12 +17,18 @@ async def init_db(settings: Settings):
     async with async_engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
 
-@asynccontextmanager
+
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    if not async_session_maker:
-        raise RuntimeError("Database not initialized")
     async with async_session_maker() as session:
         yield session
+
+
+# @asynccontextmanager
+# async def get_session() -> AsyncGenerator[AsyncSession, None]:
+#     if not async_session_maker:
+#         raise RuntimeError("Database not initialized")
+#     async with async_session_maker() as session:
+#         yield session
 
 async def close_db():
     global async_engine

@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from app.config import Settings
 from app.utils.logger import logger_config
 from app.db.database import init_db, close_db
+from app.api.user import router
 # from app.models.mini import User, Group
 
 logger = logger_config(__name__)
@@ -38,13 +39,6 @@ def create_app(settings: Settings):
         allow_headers=["*"],
     )
 
-    # Minimal example routes
-    @app.get("/users")
-    async def get_users():
-        return [{"userid": "dummy", "username": "dummy"}]
-
-    @app.get("/groups")
-    async def get_groups():
-        return [{"groupid": "dummy", "groupname": "dummy"}]
+    app.include_router(router)
     
     return app
