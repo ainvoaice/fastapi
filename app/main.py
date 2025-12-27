@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from app.config import Settings
 from app.utils.logger import logger_config
 from app.db.database import init_db, close_db
-from app.models.mini import User, Group
+# from app.models.mini import User, Group
 
 logger = logger_config(__name__)
 
