@@ -4,8 +4,7 @@ from fastapi import FastAPI
 from app.config import Settings
 from app.utils.logger import logger_config
 from app.db.database import engine
-from app.api.user import router
-# from app.models.mini import User, Group
+from app.api import rou
 
 logger = logger_config(__name__)
 
@@ -37,6 +36,6 @@ def create_app(settings: Settings):
         allow_headers=["*"],
     )
 
-    app.include_router(router)
+    app.include_router(rou)
     
     return app

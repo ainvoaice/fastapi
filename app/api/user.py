@@ -6,10 +6,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_db
 from app.db.models.mini import User
 
-router = APIRouter(prefix="/invoices", tags=["invoices"])
+userRou = APIRouter(prefix="/user", tags=["user"])
 
 
-@router.get("/user")
+@userRou.get("/user")
 async def list_users(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User))
     return result.scalars().all()

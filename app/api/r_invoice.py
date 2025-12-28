@@ -1,0 +1,45 @@
+# app/api/routes/invoices.py
+from fastapi import APIRouter, Depends, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.database import get_db
+from app.db.models.inv import Invoice, InvoiceItem
+from app.schemas.schema_invoice import InvoiceCreate, InvoiceOut
+
+invRou = APIRouter()
+
+@invRou.get("/invoice_list")
+async def list_invoices(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Invoice))
+    return result.scalars().all()
+
+
+
+
+
+@invRou.post(    "/create_new_invoice",    response_model=InvoiceOut,    status_code=status.HTTP_201_CREATED)
+async def create_invoice(    payload: InvoiceCreate,    db: AsyncSession = Depends(get_db),):
+    total_amount = sum(
+        i.quantity * i.unit_price for i in payload.items
+    )
+
+    invoice = Invoice(
+        invoice_number=payload.invoice_number,
+        customer_name=payload.customer_name,
+        total_amount=total_amount,
+        items_map=[
+            InvoiceItem(
+                description=i.description,
+                quantity=i.quantity,
+                unit_price=i.unit_price,
+            )
+            for i in payload.items
+        ],
+    )
+
+    db.add(invoice)
+    await db.commit()
+    await db.refresh(invoice)
+
+    return invoice

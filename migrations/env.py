@@ -11,6 +11,7 @@ from alembic import context
 
 from app.db.models.base import Base
 from app.db.models.mini import User, Group
+from app.db.models.inv  import Invoice, InvoiceItem
 
 
 

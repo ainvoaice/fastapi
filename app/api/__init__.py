@@ -7,12 +7,13 @@ from fastapi import APIRouter, Depends
 # from app.api.v7 import v7Router
 # from app.api.vm import vmRouter
 # from app.api.ocr import ocrRouter
-# from app.api.erp import erpRouter
-# from app.api.sync import syncRouter
+from app.api.r_invoice import invRou
+from app.api.user import userRou
 
 rou = APIRouter()
 
-# rou.include_router(v7Router)
+rou.include_router(userRou)
+rou.include_router(invRou, prefix="/invoice", tags=["Invoice"])
 # rou.include_router(syncRouter)
 # rou.include_router(erpRouter)
 # rou.include_router(vmRouter)
