@@ -4,8 +4,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import SQLModel
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncEngine
 from app.config import Settings
-from app.models import inv
-from app.models.inv import InvDB
+from app.models.inv import InvoiceDB, InvoiceItemDB
 
 async_engine: Optional[AsyncEngine] = None
 async_session_maker: Optional[async_sessionmaker[AsyncSession]] = None
