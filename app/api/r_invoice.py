@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
-from app.db.models.inv import Invoice, InvoiceItem
+from app.db.models.model_inv import Invoice, InvoiceItem
 from app.schemas.schema_invoice import InvoiceCreate, InvoiceOut
 
 invRou = APIRouter()

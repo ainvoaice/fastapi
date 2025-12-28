@@ -15,6 +15,7 @@ class Invoice(Base, BaseMixin):
     invoice_number: Mapped[str]
     customer_name: Mapped[str]
     total_amount: Mapped[float]
+    note: Mapped[Optional[str]] = mapped_column(nullable=True)
 
     items_map: Mapped[List["InvoiceItem"]] = relationship(back_populates="invoice_map", lazy="selectin")
 
@@ -24,6 +25,7 @@ class InvoiceItem(Base, BaseMixin):
     description: Mapped[str]
     quantity: Mapped[float]
     unit_price: Mapped[float]
+    total: Mapped[Optional[float]] = mapped_column(nullable=True)
 
     invoice_id: Mapped[Optional[UUID]] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("invoice.id", ondelete="SET NULL"), nullable=True
