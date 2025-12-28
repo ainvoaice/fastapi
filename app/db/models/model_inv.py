@@ -4,7 +4,9 @@ from __future__ import annotations
 from typing import Optional, List
 from uuid import UUID, uuid4
 
-from sqlalchemy import ForeignKey
+# from pgvector import Vector
+from pgvector.sqlalchemy import Vector
+from sqlalchemy import Column, ForeignKey, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -19,6 +21,13 @@ class Invoice(Base, BaseMixin):
 
     items_map: Mapped[List["InvoiceItem"]] = relationship(back_populates="invoice_map", lazy="selectin")
 
+    embedding_map: Mapped[list["InvoiceEmbedding"]] = relationship(
+        "InvoiceEmbedding",
+        lazy="selectin",
+        cascade="all, delete-orphan",
+        back_populates="invoice_map",
+    )
+
 
 class InvoiceItem(Base, BaseMixin):
     __tablename__ = "invoice_item"
@@ -32,3 +41,29 @@ class InvoiceItem(Base, BaseMixin):
     )
 
     invoice_map: Mapped[Optional[Invoice]] = relationship(back_populates="items_map", lazy="selectin")
+    
+    
+    
+
+
+class InvoiceEmbedding(Base, BaseMixin):
+    __tablename__ = "invoice_embedding"
+
+    invoice_id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), nullable=False)
+
+    # chunk containing just invoice items
+    items_chunk: Mapped[str] = mapped_column(Text, nullable=True)
+    items_embedding: Mapped[list[float]] = mapped_column(Vector(1536), nullable=True)
+
+    # chunk containing the overall invoice (metadata + items)
+    overall_chunk: Mapped[str] = mapped_column(Text, nullable=True)
+    overall_embedding: Mapped[list[float]] = mapped_column(Vector(1536), nullable=True)
+
+    # relationship back to invoice
+    invoice_map: Mapped[Invoice] = relationship(
+        "Invoice",
+        lazy="selectin",
+        back_populates="embedding_map",
+    )
+
+
