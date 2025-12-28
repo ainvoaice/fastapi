@@ -1,7 +1,7 @@
 # app/config.py
 from pydantic_settings import BaseSettings
 from typing import List, Optional
-
+from functools import lru_cache
 
 class Settings(BaseSettings):
     # Database
@@ -27,3 +27,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+        
+@lru_cache()
+def get_settings_singleton():
+    return Settings()

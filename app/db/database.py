@@ -1,5 +1,6 @@
 # db.py
 from typing import AsyncGenerator
+from fastapi import Request, Depends
 
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.ext.asyncio import (
@@ -8,13 +9,13 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from app.config import Settings
+from app.config import get_settings_singleton
 
+settings = get_settings_singleton()
 
-DATABASE_URL = Settings().DATABASE_URL
 
 engine = create_async_engine(
-    DATABASE_URL,
+    settings.DATABASE_URL,
     pool_pre_ping=True,
     echo=False,  # True only in local dev
 )

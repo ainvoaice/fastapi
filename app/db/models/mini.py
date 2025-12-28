@@ -13,17 +13,17 @@ from app.db.models.base import Base, BaseMixin
 
 class Group(Base, BaseMixin):
     __tablename__ = "group"
-    groupname: Mapped[str]
-    users: Mapped[List["User"]] = relationship(back_populates="group", lazy="selectin")
+    group_name: Mapped[str]
+    users_map: Mapped[List["User"]] = relationship(back_populates="group_map", lazy="selectin")
 
 
 
 class User(Base, BaseMixin):
     __tablename__ = "user"
-    username: Mapped[str]
+    user_name: Mapped[str]
 
     group_id: Mapped[Optional[UUID]] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("group.groupid", ondelete="SET NULL"), nullable=True
+        PG_UUID(as_uuid=True), ForeignKey("group.id", ondelete="SET NULL"), nullable=True
     )
 
-    group: Mapped[Optional[Group]] = relationship(back_populates="users", lazy="selectin")
+    group_map: Mapped[Optional[Group]] = relationship(back_populates="users_map", lazy="selectin")

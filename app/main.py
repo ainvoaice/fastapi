@@ -26,7 +26,7 @@ def create_app(settings: Settings):
         lifespan=lifespan,
     )
     
-    app.state.settings = settings
+    # app.state.settings = settings
     
     # CORS
     app.add_middleware(
