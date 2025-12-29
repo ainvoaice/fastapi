@@ -12,5 +12,6 @@ celery = Celery(
 @celery.task
 def write_log_celery(message: str):
     time.sleep(30)
-    with open("./app/celery/log_celery.txt", "a") as f:
+    with open("log_celery.txt", "a") as f:
         f.write(f"{message}\n")
+    return f"Task completed: {message}"

@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.db_async import get_db
 from app.db.models.model_inv import Invoice, InvoiceItem
 from app.schemas.schema_invoice import InvoiceCreate, InvoiceOut
-from app.celery.celery_task import create_invoice_embedding
+# from app.celery.celery_task import create_invoice_embedding
 
 invRou = APIRouter()
 
@@ -44,6 +44,6 @@ async def create_invoice(    payload: InvoiceCreate,    db: AsyncSession = Depen
     await db.refresh(invoice)
 
     # 🚀 fire-and-forget celery task
-    create_invoice_embedding.delay(str(invoice.id)) # type: ignore
+    # create_invoice_embedding.delay(str(invoice.id)) # type: ignore
     
     return invoice

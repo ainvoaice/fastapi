@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends
 # from app.api.vm import vmRouter
 # from app.api.ocr import ocrRouter
 from app.api.r_invoice import invRou
-from app.api.user import userRou
+from app.api.r_user import userRou
 
 rou = APIRouter()
 
