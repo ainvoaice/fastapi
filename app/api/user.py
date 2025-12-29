@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.celery.celery_worker import write_log_celery
 from app.db.db_async import get_db
 from app.db.models.mini import User
 
@@ -15,6 +16,11 @@ async def list_users(db: AsyncSession = Depends(get_db)):
     return result.scalars().all()
 
 
+
+@userRou.post("/notify/")
+async def notify_user(email: str):
+    write_log_celery.delay(f"Notification sent to {email}")
+    return {"message": f"Email will be sent to {email}"}
 
 # # app/api/routes/invoices.py
 # from fastapi import APIRouter, Depends, HTTPException, status, Query

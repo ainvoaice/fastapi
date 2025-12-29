@@ -11,9 +11,9 @@ app = create_app(settings)
 
 if __name__ == "__main__":
     uvicorn.run(
-        "a8080:app",
+        "a8501:app",
         host="0.0.0.0",
-        port=8080,
+        port=8501,
         reload=True,
         log_level="info"
     )
