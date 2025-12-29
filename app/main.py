@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.config import Settings
 from app.utils.logger import logger_config
-from app.db.database import engine
+from app.db.db_async import engine
 from app.api import rou
 
 logger = logger_config(__name__)

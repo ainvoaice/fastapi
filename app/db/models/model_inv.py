@@ -8,7 +8,7 @@ from uuid import UUID, uuid4
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import Column, ForeignKey, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, foreign
 
 from app.db.models.base import Base, BaseMixin
 
@@ -21,12 +21,6 @@ class Invoice(Base, BaseMixin):
 
     items_map: Mapped[List["InvoiceItem"]] = relationship(back_populates="invoice_map", lazy="selectin")
 
-    embedding_map: Mapped[list["InvoiceEmbedding"]] = relationship(
-        "InvoiceEmbedding",
-        lazy="selectin",
-        cascade="all, delete-orphan",
-        back_populates="invoice_map",
-    )
 
 
 class InvoiceItem(Base, BaseMixin):
@@ -63,7 +57,7 @@ class InvoiceEmbedding(Base, BaseMixin):
     invoice_map: Mapped[Invoice] = relationship(
         "Invoice",
         lazy="selectin",
-        back_populates="embedding_map",
+        primaryjoin=lambda: Invoice.id == foreign(InvoiceEmbedding.invoice_id),
     )
 
 
