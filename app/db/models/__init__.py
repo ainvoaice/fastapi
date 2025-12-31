@@ -1,3 +1,3 @@
 from .base import Base
 from .mini import User, Group
-from .reports import Report
+from .m_report import Report
