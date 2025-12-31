@@ -23,7 +23,7 @@ class User(Base, BaseMixin):
     user_name: Mapped[str]
 
     group_id: Mapped[Optional[UUID]] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("group.id", ondelete="SET NULL"), nullable=True
+        PG_UUID(as_uuid=True), ForeignKey("groups.id", ondelete="SET NULL"), nullable=True
     )
 
     group_map: Mapped[Optional[Group]] = relationship(back_populates="users_map", lazy="selectin")

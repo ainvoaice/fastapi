@@ -31,7 +31,7 @@ class InvoiceItem(Base, BaseMixin):
     total: Mapped[Optional[float]] = mapped_column(nullable=True)
 
     invoice_id: Mapped[Optional[UUID]] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("invoice.id", ondelete="SET NULL"), nullable=True
+        PG_UUID(as_uuid=True), ForeignKey("invoices.id", ondelete="SET NULL"), nullable=True
     )
 
     invoice_map: Mapped[Optional[Invoice]] = relationship(back_populates="items_map", lazy="selectin")

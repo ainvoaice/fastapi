@@ -9,11 +9,8 @@ from sqlalchemy import pool
 from alembic import context
 
 
+import app.db.models  # noqa: F401
 from app.db.models.base import Base
-from app.db.models.mini import User, Group
-from app.db.models.model_inv  import Invoice, InvoiceItem, InvoiceEmbedding
-
-
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
