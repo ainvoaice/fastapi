@@ -12,14 +12,14 @@ from app.db.models.base import Base, BaseMixin
 
 
 class Group(Base, BaseMixin):
-    __tablename__ = "group"
+    __tablename__ = "groups"
     group_name: Mapped[str]
     users_map: Mapped[List["User"]] = relationship(back_populates="group_map", lazy="selectin")
 
 
 
 class User(Base, BaseMixin):
-    __tablename__ = "user"
+    __tablename__ = "users"
     user_name: Mapped[str]
 
     group_id: Mapped[Optional[UUID]] = mapped_column(

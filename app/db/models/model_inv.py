@@ -13,7 +13,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship, foreign
 from app.db.models.base import Base, BaseMixin
 
 class Invoice(Base, BaseMixin):
-    __tablename__ = "invoice"
+    __tablename__ = "invoices"
     invoice_number: Mapped[str]
     customer_name: Mapped[str]
     total_amount: Mapped[float]
@@ -24,7 +24,7 @@ class Invoice(Base, BaseMixin):
 
 
 class InvoiceItem(Base, BaseMixin):
-    __tablename__ = "invoice_item"
+    __tablename__ = "invoice_items"
     description: Mapped[str]
     quantity: Mapped[float]
     unit_price: Mapped[float]
