@@ -5,6 +5,7 @@ from datetime import datetime
 from app.db.models.m_report import Report
 from app.db.repo.repo_report import ReportRepository
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, func
 
 
 class ReportService:
@@ -48,3 +49,34 @@ class ReportService:
         db: AsyncSession,
     ):
         return await ReportRepository.list_reports(db)
+
+    @staticmethod
+    async def reports_pagination(
+        db: AsyncSession,
+        page: int,
+        page_size: int,
+        query: str | None = None,
+        sort_by: str = "created_at",
+        sort_order: str = "desc",
+    ):
+        stmt = select(Report)
+
+        if query:
+            stmt = stmt.where(Report.name.ilike(f"%{query}%"))
+
+        column = getattr(Report, sort_by, Report.created_at)
+        stmt = stmt.order_by(column.desc() if sort_order == "desc" else column.asc())
+
+        total_stmt = select(func.count()).select_from(stmt.subquery())
+        total = (await db.execute(total_stmt)).scalar()
+
+        stmt = stmt.offset((page - 1) * page_size).limit(page_size)
+        items = (await db.execute(stmt)).scalars().all()
+
+        return {
+            "items": items,
+            "total": total,
+            "page": page,
+            "page_size": page_size,
+            "total_pages": (total + page_size - 1) // page_size,
+        }
