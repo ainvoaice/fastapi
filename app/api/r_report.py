@@ -16,6 +16,13 @@ async def upload_reports(
     await ReportService.upload_csv(db, content)
     return {"status": "ok"}
 
+@reportRou.post("/add")
+async def create_report(
+    payload: dict,
+    db: AsyncSession = Depends(get_db),
+):
+    return await ReportService.create(db, payload)
+
 
 @reportRou.get("/")
 async def list_reports(

@@ -123,3 +123,14 @@ class ReportService:
             "id": updated.id,
             "fields": update_data,
         }
+
+
+    @staticmethod
+    async def create(db: AsyncSession, payload: dict):
+        if payload.get("mdate"):
+            payload["mdate"] = datetime.fromisoformat(payload["mdate"])
+        report = Report(**payload)
+        db.add(report)
+        await db.commit()
+        await db.refresh(report)
+        return report
