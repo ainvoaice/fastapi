@@ -5,7 +5,7 @@ from datetime import datetime
 from app.db.models.m_report import Report
 from app.db.repo.repo_report import ReportRepository
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, update
 
 
 class ReportService:
@@ -79,4 +79,47 @@ class ReportService:
             "page": page,
             "page_size": page_size,
             "total_pages": (total + page_size - 1) // page_size,
+        }
+
+    @staticmethod
+    async def update_partial(
+        db: AsyncSession,
+        report_id: str,
+        payload: dict,
+    ):
+        # allow only real columns (security)
+        allowed_fields = {
+            "first_name",
+            "last_name",
+            "company",
+            "lead_owner",
+            "source",
+            "deal_stage",
+            "account_id",
+        }
+
+        update_data = {k: v for k, v in payload.items() if k in allowed_fields}
+
+        if not update_data:
+            return {"updated": False, "reason": "no valid fields"}
+
+        stmt = (
+            update(Report)
+            .where(Report.id == report_id)
+            .values(**update_data)
+            .returning(Report)
+        )
+
+        result = await db.execute(stmt)
+        await db.commit()
+
+        updated = result.scalar_one_or_none()
+
+        if not updated:
+            return {"updated": False, "reason": "not found"}
+
+        return {
+            "updated": True,
+            "id": updated.id,
+            "fields": update_data,
         }

@@ -24,7 +24,7 @@ async def list_reports(
     return await ReportService.list_reports(db)
 
 
-@reportRou.get("/reports")
+@reportRou.get("/pages")
 async def list_reports(
     db: AsyncSession = Depends(get_db),
     page: int = Query(1, ge=1),
@@ -41,3 +41,13 @@ async def list_reports(
         sort_by=sort_by,
         sort_order=sort_order,
     )
+    
+    
+# FastAPI PATCH endpoint (required)
+@reportRou.patch("/{report_id}")
+async def update_report(
+    report_id: str,
+    payload: dict,
+    db: AsyncSession = Depends(get_db),
+):
+    return await ReportService.update_partial(db, report_id, payload)
