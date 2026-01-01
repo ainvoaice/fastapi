@@ -1,1 +1,10 @@
 fastapi[all]
+sqlalchemy
+psycopg2-binary
+alembic
+pydantic
+pgvector-haystack
+haystack-ai
+datasets>=2.6.1
+sentence-transformers>=4.1.0
+celery
