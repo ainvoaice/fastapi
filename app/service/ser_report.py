@@ -20,6 +20,14 @@ class ReportService:
         reports: list[Report] = []
 
         for row in reader:
+            content = f"""
+                        Lead owner is {row['Lead Owner']}.
+                        Source is {row['Source']}.
+                        Deal stage is {row['Deal Stage']}.
+                        Account ID is {row['Account Id']}.
+                        Contact name is {row['First Name']} {row['Last Name']}.
+                        Company name is {row['Company']}.
+                    """.strip()
             report = Report(
                 date=datetime.strptime(row["Date"], "%m/%d/%Y").date(),
                 lead_owner=row["Lead Owner"],
@@ -29,6 +37,7 @@ class ReportService:
                 first_name=row["First Name"],
                 last_name=row["Last Name"],
                 company=row["Company"],
+                content=content,
             )
             reports.append(report)
 
