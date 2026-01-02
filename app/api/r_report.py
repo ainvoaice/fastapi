@@ -71,6 +71,9 @@ async def list_filtered_reports(
     source: str | None = None,
     deal_stage: str | None = None,
     lead_owner: str | None = None,
+    first_name: str | None = None,
+    last_name: str | None = None,
+    company: str | None = None,
     db: AsyncSession = Depends(get_db),
 ):
     return await ReportService.list_filtered_reports(
@@ -82,4 +85,7 @@ async def list_filtered_reports(
         source=source,
         deal_stage=deal_stage,
         lead_owner=lead_owner,
+        first_name=first_name,
+        last_name=last_name,
+        company=company,
     )

@@ -124,7 +124,6 @@ class ReportService:
             "fields": update_data,
         }
 
-
     @staticmethod
     async def create(db: AsyncSession, payload: dict):
         if payload.get("mdate"):
@@ -134,8 +133,6 @@ class ReportService:
         await db.commit()
         await db.refresh(report)
         return report
-
-
 
     @staticmethod
     async def list_filtered_reports(
@@ -147,6 +144,9 @@ class ReportService:
         source: str | None,
         deal_stage: str | None,
         lead_owner: str | None,
+        first_name: str | None = None,
+        last_name: str | None = None,
+        company: str | None = None,
     ):
         stmt = select(Report).where(Report.is_deleted.is_(False))
 
@@ -159,12 +159,24 @@ class ReportService:
         if lead_owner:
             stmt = stmt.where(Report.lead_owner == lead_owner)
 
+        if first_name:
+            stmt = stmt.where(Report.first_name == first_name)
+
+        if last_name:
+            stmt = stmt.where(Report.last_name == last_name)
+
+        if company:
+            stmt = stmt.where(Report.company == company)
+
+        count_stmt = select(func.count()).select_from(stmt.subquery())
+        total_result = await db.execute(count_stmt)
+        total_items = total_result.scalar() or 0
+        total_pages = (total_items + page_size - 1) // page_size  # ceil division
+
         if sort_by:
             col = getattr(Report, sort_by, None)
             if col is not None:
-                stmt = stmt.order_by(
-                    col.desc() if sort_order == "desc" else col.asc()
-                )
+                stmt = stmt.order_by(col.desc() if sort_order == "desc" else col.asc())
 
         stmt = stmt.offset((page - 1) * page_size).limit(page_size)
 
@@ -174,4 +186,7 @@ class ReportService:
         return {
             "items": items,
             "page": page,
+            "total_pages": total_pages,
+            "page_size": page_size,
+            "total_items": total_items,
         }
