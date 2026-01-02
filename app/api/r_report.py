@@ -31,7 +31,7 @@ async def list_reports(
     return await ReportService.list_reports(db)
 
 
-@reportRou.get("/pages")
+@reportRou.get("/pagination")
 async def list_reports(
     db: AsyncSession = Depends(get_db),
     page: int = Query(1, ge=1),
@@ -58,3 +58,28 @@ async def update_report(
     db: AsyncSession = Depends(get_db),
 ):
     return await ReportService.update_partial(db, report_id, payload)
+
+
+
+
+@reportRou.get("/list_filtered_reports")
+async def list_filtered_reports(
+    page: int = 1,
+    page_size: int = 10,
+    sort_by: str | None = None,
+    sort_order: str | None = "asc",
+    source: str | None = None,
+    deal_stage: str | None = None,
+    lead_owner: str | None = None,
+    db: AsyncSession = Depends(get_db),
+):
+    return await ReportService.list_filtered_reports(
+        db,
+        page=page,
+        page_size=page_size,
+        sort_by=sort_by,
+        sort_order=sort_order,
+        source=source,
+        deal_stage=deal_stage,
+        lead_owner=lead_owner,
+    )

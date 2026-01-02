@@ -62,7 +62,7 @@ class ReportService:
         stmt = select(Report)
 
         if query:
-            stmt = stmt.where(Report.name.ilike(f"%{query}%"))
+            stmt = stmt.where(Report.source.ilike(f"%{query}%"))
 
         column = getattr(Report, sort_by, Report.created_at)
         stmt = stmt.order_by(column.desc() if sort_order == "desc" else column.asc())
@@ -134,3 +134,44 @@ class ReportService:
         await db.commit()
         await db.refresh(report)
         return report
+
+
+
+    @staticmethod
+    async def list_filtered_reports(
+        db: AsyncSession,
+        page: int,
+        page_size: int,
+        sort_by: str | None,
+        sort_order: str | None,
+        source: str | None,
+        deal_stage: str | None,
+        lead_owner: str | None,
+    ):
+        stmt = select(Report).where(Report.is_deleted.is_(False))
+
+        if source:
+            stmt = stmt.where(Report.source == source)
+
+        if deal_stage:
+            stmt = stmt.where(Report.deal_stage == deal_stage)
+
+        if lead_owner:
+            stmt = stmt.where(Report.lead_owner == lead_owner)
+
+        if sort_by:
+            col = getattr(Report, sort_by, None)
+            if col is not None:
+                stmt = stmt.order_by(
+                    col.desc() if sort_order == "desc" else col.asc()
+                )
+
+        stmt = stmt.offset((page - 1) * page_size).limit(page_size)
+
+        result = await db.execute(stmt)
+        items = result.scalars().all()
+
+        return {
+            "items": items,
+            "page": page,
+        }
