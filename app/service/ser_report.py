@@ -151,22 +151,23 @@ class ReportService:
         stmt = select(Report).where(Report.is_deleted.is_(False))
 
         if source:
-            stmt = stmt.where(Report.source == source)
+            stmt = stmt.where(Report.source.ilike(f"{source}%"))
 
         if deal_stage:
-            stmt = stmt.where(Report.deal_stage == deal_stage)
+            stmt = stmt.where(Report.deal_stage.ilike(f"{deal_stage}%"))
 
         if lead_owner:
-            stmt = stmt.where(Report.lead_owner == lead_owner)
+            stmt = stmt.where(Report.lead_owner.ilike(f"{lead_owner}%"))
 
         if first_name:
-            stmt = stmt.where(Report.first_name == first_name)
+            stmt = stmt.where(Report.first_name.ilike(f"{first_name}%"))
 
         if last_name:
-            stmt = stmt.where(Report.last_name == last_name)
+            stmt = stmt.where(Report.last_name.ilike(f"{last_name}%"))
 
         if company:
-            stmt = stmt.where(Report.company == company)
+            stmt = stmt.where(Report.company.ilike(f"{company}%"))
+
 
         count_stmt = select(func.count()).select_from(stmt.subquery())
         total_result = await db.execute(count_stmt)

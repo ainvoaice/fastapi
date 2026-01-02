@@ -13,47 +13,33 @@ class ReportEmbeddingService:
     async def embed_all_reports(db: AsyncSession):
         result = await db.execute(text("""
             SELECT
-                date,
-                lead_owner,
-                source,
-                deal_stage,
+                id,
                 account_id,
-                first_name,
-                last_name,
-                company
+                content
             FROM reports
         """))
 
         rows = result.fetchall()
 
-        documents = []
+        if not rows:
+            return 0
 
-        for r in rows:
-            content = (
-                f"Date: {r.date}, "
-                f"Lead Owner: {r.lead_owner}, "
-                f"Source: {r.source}, "
-                f"Deal Stage: {r.deal_stage}, "
-                f"Account Id: {r.account_id}, "
-                f"First Name: {r.first_name}, "
-                f"Last Name: {r.last_name}, "
-                f"Company: {r.company}"
+        documents = [
+            Document(
+                content=r.content,
+                meta={
+                    "account_id": r.account_id,
+                    "report_id": str(r.id),
+                    "source": "reports",
+                },
             )
-
-            documents.append(
-                Document(
-                    content=content,
-                    meta={
-                        "account_id": r.account_id,
-                        "deal_stage": r.deal_stage
-                    }
-                )
-            )
+            for r in rows
+        ]
 
         # Embed
-        embedded_docs = embedder.run(documents)["documents"]
+        embedded_docs = embedder.run(documents=documents)["documents"]
 
-        # Store in pgvector
+        # Persist vectors
         document_store.write_documents(embedded_docs)
 
         return len(embedded_docs)

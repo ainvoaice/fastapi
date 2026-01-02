@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     
     # Security
     SECRET_KEY: str = "your-secret-key-here-change-in-production"
+    OpenAPI_KEY: Optional[str] = None
     
     class Config:
         env_file = ".env"
