@@ -30,7 +30,7 @@ class ReportService:
                         Company name is {row['Company']}.
                     """.strip()
             report = Report(
-                date=datetime.strptime(row["Date"], "%m/%d/%Y").date(),
+                mdate=datetime.strptime(row["Date"], "%m/%d/%Y").date(),
                 lead_owner=row["Lead Owner"],
                 source=row["Source"],
                 deal_stage=row["Deal Stage"],
