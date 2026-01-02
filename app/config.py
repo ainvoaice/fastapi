@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = "postgresql+asyncpg://postgres:password@localhost/invoicedb"
     DB_SYNC: str = "postgresql://postgres:password@localhost/invoicedb"
+    OPENAI_API_KEY: Optional[str] = None
     DB_POOL_SIZE: int = 5
     DB_MAX_OVERFLOW: int = 10
     DB_ECHO: bool = False
