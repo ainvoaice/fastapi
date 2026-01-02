@@ -5,7 +5,6 @@ from app.config import Settings
 from app.utils.logger import logger_config
 from app.db.db_async import engine
 from app.api import rou
-from app.rag.rag_store import load_docs_from_pg
 
 logger = logger_config(__name__)
 
@@ -14,7 +13,7 @@ logger = logger_config(__name__)
 async def lifespan(app: FastAPI):
     try:
         async with engine.begin() as conn:
-            await load_docs_from_pg(conn)
+            pass
         yield
     finally:
         await engine.dispose()
