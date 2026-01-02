@@ -17,7 +17,7 @@ from app.rag import rag_service
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-model = "gpt-4o"
+openaimodel = "gpt-4o"
 
 
 ragRou = APIRouter()
@@ -43,7 +43,7 @@ async def ask_ai(req: AIRequest):
     ]
 
     response = client.chat.completions.create(
-        model=model,
+        model=openaimodel,
         response_format={"type": "json_object"},
         messages=messages,
         temperature=0.2,
@@ -53,39 +53,39 @@ async def ask_ai(req: AIRequest):
     return {"answer": response.choices[0].message.content}
 
 
-
-
-
+class RAGRequest(BaseModel):
+    query: str
+    top_k: int = 3  # optional, default 3
 
 
 class RAGResponse(BaseModel):
     answer: str
     sources: list[str]
-
+    
+    
 # initialize embedding model once
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
 
-@ragRou.get("/purerag", response_model=RAGResponse)
-async def rag_endpoint():
-    # 1. Embed query
-    query = "what is the source"
-    query_emb = model.encode([query])[0]
+@ragRou.post("/purerag", response_model=RAGResponse)
+async def purerag_endpoint(req: RAGRequest):
+    # 1. Embed the query
+    query_emb = model.encode([req.query])[0]
 
-    # 2. Compute cosine similarity
+    # 2. Compute cosine similarity with in-memory embeddings
     embeddings = np.array([doc["embedding"] for doc in RAG_DOCS])
     sims = cosine_similarity([query_emb], embeddings)[0]
 
-    # 3. Select top-K
-    top_k = 3
+    # 3. Select top-K documents
+    top_k = req.top_k
     top_idx = sims.argsort()[-top_k:][::-1]
     top_docs = [RAG_DOCS[i] for i in top_idx]
 
     # 4. Concatenate context
     context = "\n\n".join(doc["content"] for doc in top_docs)
 
-    # 5. Build prompt and call LLM (dummy for now)
-    prompt = f"Answer using ONLY the context below.\n\nContext:\n{context}\n\nQuestion:\n{query}"
+    # 5. Build prompt and call LLM (dummy placeholder for now)
+    prompt = f"Answer using ONLY the context below.\n\nContext:\n{context}\n\nQuestion:\n{req.query}"
     answer = prompt  # replace with real LLM call
 
     return RAGResponse(
