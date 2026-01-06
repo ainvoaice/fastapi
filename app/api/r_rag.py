@@ -92,3 +92,42 @@ async def purerag_endpoint(req: RAGRequest):
         answer=answer,
         sources=[doc["id"] for doc in top_docs],
     )
+    
+    
+    
+@ragRou.post("/askLLM", response_model=RAGResponse)
+async def ask_llm_endpoint(req: RAGRequest):
+    # 1. Retrieve top-k RAG documents
+    query_emb = model.encode([req.query])[0]
+    embeddings = np.array([doc["embedding"] for doc in RAG_DOCS])
+    sims = cosine_similarity([query_emb], embeddings)[0]
+    top_idx = sims.argsort()[-req.top_k:][::-1]
+    top_docs = [RAG_DOCS[i] for i in top_idx]
+
+    # 2. Concatenate context
+    context = "\n".join(doc["content"] for doc in top_docs)
+
+    # 3. Send to OpenAI chat completion
+    messages = [
+        {
+            "role": "system",
+            "content": "You are a helpful data assistant. Use the given reports to answer questions concisely and clearly.",
+        },
+        {
+            "role": "user",
+            "content": f"Based on the following reports:\n{context}\n\nAnswer this question: {req.query}",
+        },
+    ]
+
+    response = client.chat.completions.create(
+        model=openaimodel,  # replace with your model
+        messages=messages,
+        temperature=0.2,
+    )
+
+    answer = response.choices[0].message.content
+
+    return RAGResponse(
+        answer=answer,
+        sources=[doc["id"] for doc in top_docs],
+    )
